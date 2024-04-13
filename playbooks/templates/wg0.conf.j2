@@ -1,0 +1,27 @@
+[Interface]
+Address = 10.200.200.{{ 1 if ansible_hostname == 'dev-challenger-01' else 2 if ansible_hostname == 'dev-challenger-02' else 3 }}
+PrivateKey = {{ hostvars[inventory_hostname].wg_private_key.stdout }}
+ListenPort = 51820
+SaveConfig = true
+
+[Peer]
+# Load Balancer
+PublicKey = {{ hostvars['dev-challenger-03'].wg_public_key.stdout }}
+Endpoint = 178.128.196.252:51820
+AllowedIPs = 10.200.200.3/32
+
+{% if ansible_hostname != 'dev-challenger-01' %}
+[Peer]
+# Node 1
+PublicKey = {{ hostvars['dev-challenger-01'].wg_public_key.stdout }}
+Endpoint = 206.189.57.200:51820
+AllowedIPs = 10.200.200.1/32
+{% endif %}
+
+{% if ansible_hostname != 'dev-challenger-02' %}
+[Peer]
+# Node 2
+PublicKey = {{ hostvars['dev-challenger-02'].wg_public_key.stdout }}
+Endpoint = 206.189.54.201:51820
+AllowedIPs = 10.200.200.2/32
+{% endif %}

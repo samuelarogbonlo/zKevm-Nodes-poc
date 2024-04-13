@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'haproxy'
+    static_configs:
+      - targets: ['localhost:9101']  # Assumes HAProxy metrics are available at localhost:9101
+
+  - job_name: 'zkEVM-nodes'
+    static_configs:
+      - targets: ['206.189.57.200:9100', '206.189.54.201:9100']

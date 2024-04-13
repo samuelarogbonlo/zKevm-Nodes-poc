@@ -1,0 +1,31 @@
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    maxconn 4096
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+frontend http_front
+    bind *:80
+    default_backend http_back
+
+frontend ws_front
+    bind *:81
+    default_backend ws_back
+
+backend http_back
+    balance roundrobin
+    server dev1 206.189.57.200:80 check
+    server dev2 206.189.54.201:80 check
+
+backend ws_back
+    balance roundrobin
+    server dev1 206.189.57.200:81 check
+    server dev2 206.189.54.201:81 check
