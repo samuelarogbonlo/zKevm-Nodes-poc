@@ -1,0 +1,99 @@
+---
+- name: Install Docker and step-up-zkevm-nodes
+  hosts: nodes
+  become: true
+  gather_facts: true
+  vars:
+    yoto_dir: /etc/zkevm
+    zkevm_net: testnet
+  tasks:
+    - name: Install docker + docker-compose
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+
+    - name: Docker Python wrapper
+      ansible.builtin.apt:
+        name: python3-docker
+        state: present
+
+    - name: Add ansible user to docker group
+      shell: "usermod -aG docker astar-admin"
+
+    - name: Reload service docker, in all cases
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+
+    - name: Start Eth Geth node Container
+      community.docker.docker_container:
+        name: Geth
+        image: ethereum/client-go
+        state: started
+        restart_policy: always
+        network_mode: host
+        published_ports:
+          - "30303:30303"
+          - "8545:8545"
+        command: >
+          --http --http.addr "0.0.0.0" --http.port 8545 --http.api "eth,net,web3"
+
+    - name: Create /etc/zkevm directory
+      ansible.builtin.file:
+        path: /etc/zkevm
+        state: directory
+        mode: '0755'
+        owner: "1000"
+        group: "1000"
+
+    - name: Create /var/lib/zkevm directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+        owner: "1000"
+        group: "1000"
+      loop:
+        - /var/lib/zkevm/statedb
+        - /var/lib/zkevm/pooldb"
+        
+    - name: Download zkyoto.tar.gz
+      ansible.builtin.get_url:
+        url: https://shared-assets.astar.network/files/zkevm/zkyoto/zkyoto.tar.gz
+        dest: "/tmp/zkyoto.tar.gz"
+        mode: '0644'
+
+    - name: Extract zkyoto.tar.gz to the ZKEVM directory
+      ansible.builtin.unarchive:
+        src: "/tmp/zkyoto.tar.gz"
+        dest: "{{ yoto_dir }}"
+        remote_src: true
+        extra_opts: ["--strip-components=1"]
+
+    - name: Remove downloaded tar.gz file
+      ansible.builtin.file:
+        path: "/tmp/zkyoto.tar.gz"
+        state: absent
+
+    - name: Set host IP variable dynamically
+      set_fact:
+        host_ip: "{{ ansible_default_ipv4.address }}"
+
+    - name: Template Zkyoto env
+      ansible.builtin.template:
+        src: "templates/.env.j2"
+        dest: "{{ yoto_dir }}/.env"
+        mode: "0645"
+
+    - name: Template Zkyoto config
+      ansible.builtin.template:
+        src: "templates/node.config.toml.j2"
+        dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/node.config.toml"
+        mode: "0645"
+
+    - name:  Start Zkyoto suites
+      become: true
+      ansible.builtin.shell: |
+        docker compose --env-file {{ yoto_dir }}/.env -f {{ yoto_dir }}/docker-compose.yml up -d
+      args:
+        chdir: "{{ yoto_dir }}"
+        executable: /bin/bash
