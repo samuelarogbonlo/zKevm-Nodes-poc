@@ -1,0 +1,65 @@
+---
+# tasks file for roles/zkyoto
+- name: Create /etc/zkevm directory
+  ansible.builtin.file:
+    path: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+
+- name: Create /var/lib/zkevm directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "1000"
+    group: "1000"
+  loop:
+    - /var/lib/zkevm/statedb
+    - /var/lib/zkevm/pooldb"
+
+- name: Template ZKyoto env
+  ansible.builtin.template:
+    src: "templates/.env.j2"
+    dest: "{{ yoto_dir }}/.env"
+    mode: "0645"
+
+- name: Template Zkyoto config
+  ansible.builtin.template:
+    src: "templates/testnet/node.config.toml.j2"
+    dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/node.config.toml"
+    mode: "0645"
+
+- name: move Posgres init sql
+  ansible.builtin.copy:
+    src: "db/init_prover_db_sql"
+    dest: "{{ yoto_dir }}/db/init_prover_db_sql"
+
+- name: move compose file
+  ansible.builtin.copy:
+    src: "docker-compose.yml"
+    dest: "{{ yoto_dir }}/docker-compose.yml"
+
+- name: move postgresql.conf file
+  ansible.builtin.copy:
+    src: "postgresql.conf"
+    dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/postgresql.conf"
+
+- name: move prover.config file
+  ansible.builtin.copy:
+    src: "prover.config.json"
+    dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/prover.config.json"
+
+- name: move Zkyoto file
+  ansible.builtin.copy:
+    src: "zkyoto.genesis.json"
+    dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/zkyoto.genesis.json"
+
+- name:  Start Zkyoto suites
+  become: true
+  ansible.builtin.shell: |
+    docker compose --env-file .env -f docker-compose.yml up -d
+  args:
+    chdir: "{{ yoto_dir }}"
+    executable: /bin/bash

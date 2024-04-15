@@ -5,9 +5,9 @@ Outputs = ["stderr"]
 
 [State]
         [State.DB]
-        User = "state_user"
-        Password = "state_password"
-        Name = "state_db"
+        User = "prover_user"
+        Password = "prover_pass"
+        Name = "prover_db"
         Host = "zkevm-state-db"
         Port = "5432"
         EnableLog = false
@@ -57,7 +57,7 @@ GlobalQueue = 1024
         MaxConns = 200
 
 [Etherman]
-URL = http://{{ host_ip }}:8545"
+URL = http://{{ host_ip }}:8544"
 ForkIDChunkSize = 20000
 MultiGasProvider = false
         [Etherman.Etherscan]
@@ -94,7 +94,6 @@ MaxGRPCMessageSize = 100000000
 Enabled = true
 Host = "0.0.0.0"
 Port = 9091
-Enabled = false
 ProfilingHost = "0.0.0.0"
 ProfilingPort = 6060
 ProfilingEnabled = false

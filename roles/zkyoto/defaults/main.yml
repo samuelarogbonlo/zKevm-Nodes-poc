@@ -1,0 +1,5 @@
+---
+# defaults file for roles/zkyoto
+zkevm_net: testnet
+yoto_postgres_config_path: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/postgresql.conf"
+yoto_dir: /etc/zkevm
