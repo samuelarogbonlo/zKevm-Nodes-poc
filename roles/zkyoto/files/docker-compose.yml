@@ -9,7 +9,7 @@ services:
     image: ethereum/client-go:stable
     command:
       - --sepolia
-      - --datadir="/var/lib/goethereum"
+      - --datadir=/var/lib/goethereum
       - --cache=2048 
       - --http
       - --http.addr=0.0.0.0
@@ -67,7 +67,7 @@ services:
         condition: service_started
       lighthouse-beacon:
         condition: service_started
-    image: staketechnologies/cdk-validium-node:0.5.13-cdk.4
+    image: staketechnologies/cdk-validium-node:v0.6.4-cdk.6
     deploy:
       resources:
         limits:
@@ -98,9 +98,9 @@ services:
         condition: service_started
       lighthouse-beacon:
         condition: service_started  
-    image: staketechnologies/cdk-validium-node:0.5.13-cdk.4
+    image: staketechnologies/cdk-validium-node:v0.6.4-cdk.6
     ports:
-      - 9092:9091 # needed if metrics enabled
+      - 9092:9091
     deploy:
       resources:
         limits:
@@ -168,13 +168,13 @@ services:
   zkevm-prover:
     container_name: zkevm-prover
     restart: unless-stopped
-    image: staketechnologies/zkevm-prover:v4.0.19
+    image: staketechnologies/zkevm-prover:v6.0.0
     depends_on:
       zkevm-state-db:
         condition: service_healthy
     ports:
-      - 50061:50061 # MT
-      - 50071:50071 # Executor
+      - 50061:50061
+      - 50071:50071
     volumes:
       - ${ZKEVM_ADVANCED_CONFIG_DIR:-./config/environments/${ZKEVM_NETWORK}}/prover.config.json:/usr/src/app/config.json
     command: >

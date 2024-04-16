@@ -1,17 +1,6 @@
 ---
 # tasks file for roles/zkyoto
-- name: Create /etc/zkevm directory
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0755'
-    owner: "1000"
-    group: "1000"
-  loop:
-    - "{{ yoto_dir }}/db"
-    - "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
-
-- name: Create /var/lib/zkevm directories
+- name: Create zkevm directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -21,6 +10,9 @@
   loop:
     - /var/lib/zkevm/statedb
     - /var/lib/zkevm/pooldb"
+    - /data/geth
+    - "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
+    - "{{ yoto_dir }}/db"
 
 - name: Set host IP variable dynamically
   set_fact:
@@ -84,3 +76,5 @@
   args:
     chdir: "{{ yoto_dir }}"
     executable: /bin/bash
+
+

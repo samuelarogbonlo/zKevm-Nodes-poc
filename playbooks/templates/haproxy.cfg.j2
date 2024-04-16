@@ -22,10 +22,16 @@ frontend ws_front
 
 backend http_back
     balance roundrobin
-    server dev1 206.189.57.200:80 check
-    server dev2 206.189.54.201:80 check
+    server dev1 206.189.57.200:8545 check
+    server dev2 206.189.54.201:8545 check
 
 backend ws_back
     balance roundrobin
-    server dev1 206.189.57.200:81 check
-    server dev2 206.189.54.201:81 check
+    server dev1 206.189.57.200:8546 check
+    server dev2 206.189.54.201:8546 check
+
+listen stats
+    bind :8000
+    stats enable
+    stats uri /monitoring
+    stats auth astar-admin:astar-admin

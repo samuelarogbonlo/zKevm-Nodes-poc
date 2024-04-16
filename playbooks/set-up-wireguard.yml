@@ -1,0 +1,52 @@
+- name: Setup WireGuard VPN
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install WireGuard
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - resolvconf
+        - wireguard  
+
+    - name: Generate WireGuard Private Keys
+      command: wg genkey
+      register: wg_private_key
+      changed_when: false
+      check_mode: false
+
+    - name: Generate WireGuard Public Keys
+      command: "echo {{ wg_private_key.stdout }}"
+      register: wg_public_key
+      changed_when: false
+      check_mode: false
+
+    - name: Make sysctl changes permanent
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        line: "{{ item.line }}"
+        create: yes
+      with_items:
+        - { line: 'net.ipv4.ip_forward=1' }
+        - { line: 'net.ipv6.conf.all.forwarding=1' }
+
+    - name: Set up WireGuard configuration
+      template:
+        src: templates/wg0.conf.j2
+        dest: /etc/wireguard/wg0.conf
+      notify: restart wireguard
+
+    - name: Enable and start WireGuard
+      systemd:
+        name: wg-quick@wg0
+        enabled: yes
+        state: restarted
+
+  handlers:
+    - name: restart wireguard
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
+

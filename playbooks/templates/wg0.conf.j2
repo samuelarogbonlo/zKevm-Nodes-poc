@@ -1,14 +1,21 @@
 [Interface]
 Address = 10.200.200.{{ 1 if ansible_hostname == 'dev-challenger-01' else 2 if ansible_hostname == 'dev-challenger-02' else 3 }}
 PrivateKey = {{ hostvars[inventory_hostname].wg_private_key.stdout }}
-ListenPort = 51820
+FwMark = 0xca6c
 SaveConfig = true
+{% if ansible_hostname == 'dev-challenger-03' %}
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE;
+{% endif %}
 
 [Peer]
+{% if ansible_hostname == 'dev-challenger-01' and ansible_hostname == 'dev-challenger-02' %}
 # Load Balancer
 PublicKey = {{ hostvars['dev-challenger-03'].wg_public_key.stdout }}
 Endpoint = 178.128.196.252:51820
 AllowedIPs = 10.200.200.3/32
+{% endif %}
 
 {% if ansible_hostname != 'dev-challenger-01' %}
 [Peer]
