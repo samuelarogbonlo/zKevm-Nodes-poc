@@ -1,39 +1,11 @@
 ---
-- name: Install Docker and step-up-zkevm-nodes
+- name: Set-up zkyoto
   hosts: nodes
   become: true
   gather_facts: true
   vars:
     yoto_dir: /etc/zkevm
     zkevm_net: testnet
+    jwtsecret_key: "dea0ec10143704794fc53b845b783e302a7e3f8d480ebf9d0490fa41f7d92f14"
   roles:
-    - zkyoto
-  tasks:
-    - name: Install docker + docker-compose
-      ansible.builtin.include_role:
-        name: geerlingguy.docker
-
-    - name: Docker Python wrapper
-      ansible.builtin.apt:
-        name: python3-docker
-        state: present
-
-    - name: Add ansible user to docker group
-      shell: "usermod -aG docker astar-admin"
-
-    - name: Reload service docker, in all cases
-      ansible.builtin.service:
-        name: docker
-        state: restarted
-
-    - name: Set host IP variable dynamically
-      set_fact:
-        host_ip: "{{ ansible_default_ipv4.address }}"
-
-    - name:  Start Zkyoto suites
-      become: true
-      ansible.builtin.shell: |
-        docker compose --env-file {{ yoto_dir }}/.env -f {{ yoto_dir }}/docker-compose.yml up -d
-      args:
-        chdir: "{{ yoto_dir }}"
-        executable: /bin/bash
+    - ../roles/zkyoto

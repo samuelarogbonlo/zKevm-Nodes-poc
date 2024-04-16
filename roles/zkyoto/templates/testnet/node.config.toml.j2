@@ -57,7 +57,7 @@ GlobalQueue = 1024
         MaxConns = 200
 
 [Etherman]
-URL = http://{{ host_ip }}:8544"
+URL = "http://geth-go:8544"
 ForkIDChunkSize = 20000
 MultiGasProvider = false
         [Etherman.Etherscan]
@@ -91,7 +91,6 @@ WaitOnResourceExhaustion = "1s"
 MaxGRPCMessageSize = 100000000
 
 [Metrics]
-Enabled = true
 Host = "0.0.0.0"
 Port = 9091
 ProfilingHost = "0.0.0.0"

@@ -2,11 +2,14 @@
 # tasks file for roles/zkyoto
 - name: Create /etc/zkevm directory
   ansible.builtin.file:
-    path: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
+    path: "{{ item }}"
     state: directory
     mode: '0755'
     owner: "1000"
     group: "1000"
+  loop:
+    - "{{ yoto_dir }}/db"
+    - "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
 
 - name: Create /var/lib/zkevm directories
   ansible.builtin.file:
@@ -18,6 +21,10 @@
   loop:
     - /var/lib/zkevm/statedb
     - /var/lib/zkevm/pooldb"
+
+- name: Set host IP variable dynamically
+  set_fact:
+    host_ip: "{{ ansible_default_ipv4.address }}"
 
 - name: Template ZKyoto env
   ansible.builtin.template:
@@ -33,7 +40,7 @@
 
 - name: move Posgres init sql
   ansible.builtin.copy:
-    src: "db/init_prover_db_sql"
+    src: "db/init_prover_db.sql"
     dest: "{{ yoto_dir }}/db/init_prover_db_sql"
 
 - name: move compose file
@@ -43,18 +50,32 @@
 
 - name: move postgresql.conf file
   ansible.builtin.copy:
-    src: "postgresql.conf"
+    src: "testnet/postgresql.conf"
     dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/postgresql.conf"
 
 - name: move prover.config file
   ansible.builtin.copy:
-    src: "prover.config.json"
+    src: "testnet/prover.config.json"
     dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/prover.config.json"
 
 - name: move Zkyoto file
   ansible.builtin.copy:
-    src: "zkyoto.genesis.json"
+    src: "testnet/zkyoto.genesis.json"
     dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/zkyoto.genesis.json"
+
+- name: Create jwtsecret dir
+  become: true
+  file:
+    path: "{{ yoto_dir }}/secret"
+    state: directory
+    mode: "775"
+    
+- name: Write jwtsecret
+  become: true
+  copy:
+    content: "dea0ec10143704794fc53b845b783e302a7e3f8d480ebf9d0490fa41f7d92f14"
+    dest: "{{ yoto_dir }}/secret/jwtsecret"
+    mode: "775"
 
 - name:  Start Zkyoto suites
   become: true
