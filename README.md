@@ -11,9 +11,7 @@ This project outlines the process to create a Proof Of Concept of a simple archi
 Also, we have decided to use an Infrastructure as a Code pattern which is Ansible in this case, for deploying all the services and managing every necessary configuration.
 
 ### Requirements
-- Servers (at least 3 servers)
-- Docker and Docker-Compose
-- Postgres
+- Ansible
 
 ### Installation
 - Setup safe SSH procedures from your local machine
