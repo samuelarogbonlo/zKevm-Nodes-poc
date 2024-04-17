@@ -12,6 +12,7 @@ Also, we have decided to use an Infrastructure as a Code pattern which is Ansibl
 
 ### Requirements
 - Ansible
+- Make
 
 ### Installation
 - Setup safe SSH procedures from your local machine
