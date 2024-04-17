@@ -22,6 +22,7 @@ services:
           memory: 512M
     ports:
       - 8545:8545
+      - 8546:8546
       - 9091:9091
     environment:
       - ZKEVM_NODE_ETHERMAN_URL=${ZKEVM_NODE_ETHERMAN_URL}
