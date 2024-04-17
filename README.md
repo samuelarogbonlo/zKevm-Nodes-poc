@@ -18,7 +18,7 @@ Also, we have decided to use an Infrastructure as a Code pattern which is Ansibl
 ### Installation
 - Setup safe SSH procedures from your local machine
 - Run `make run-astar-network` and this will bootstrap all the steps from scratch.
-- You can access the RPC in both links [here](http-challenger.astar.network) and [here](ws-challenger.astar.network) or you can just simply `curl` the URL.
+- To interact with the HTTP RPC and WebSocket endpoints, you can use either `curl` for [http-challenger.astar.network](http://http-challenger.astar.network) or a `WebSocket client` for [ws-challenger.astar.network](http://ws-challenger.astar.network), depending on the service you wish to access.
 
 ## Author
 - Samuel Arogbonlo - [GitHub](https://github.com/samuelarogbonlo)
