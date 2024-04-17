@@ -3,7 +3,7 @@
 ## Overview
 
 <div align="center">
-  <img src="https://github.com/samuelarogbonlo/astar-poc/assets/47984109/f520a4d7-4016-48f5-96cd-fe41aef530c5" alt="Architectural Overview">
+  <img src="https://github.com/samuelarogbonlo/astar-poc/assets/47984109/13efbeef-66fe-4c00-8183-530a5896ac54" alt="Architectural Overview">
 </div>
 
 This project outlines the process to create a Proof Of Concept of a simple architecture with 2 zKyoto RPC nodes behind a load balancer exposing a public endpoint and communicating internally through a private network.
@@ -12,8 +12,7 @@ Also, we have decided to use an Infrastructure as a Code pattern which is Ansibl
 
 ### Requirements
 - Servers (at least 3 servers)
-- Docker and docker-compose
-- Python
+- Docker and Docker-Compose
 - Postgres
 
 ### Installation
