@@ -10,13 +10,8 @@
   loop:
     - /var/lib/zkevm/statedb
     - /var/lib/zkevm/pooldb"
-    - /data/geth
     - "{{ yoto_dir }}/config/environments/{{ zkevm_net }}"
     - "{{ yoto_dir }}/db"
-
-- name: Set host IP variable dynamically
-  set_fact:
-    host_ip: "{{ ansible_default_ipv4.address }}"
 
 - name: Template ZKyoto env
   ansible.builtin.template:
@@ -54,20 +49,6 @@
   ansible.builtin.copy:
     src: "testnet/zkyoto.genesis.json"
     dest: "{{ yoto_dir }}/config/environments/{{ zkevm_net }}/zkyoto.genesis.json"
-
-- name: Create jwtsecret dir
-  become: true
-  file:
-    path: "{{ yoto_dir }}/secret"
-    state: directory
-    mode: "775"
-    
-- name: Write jwtsecret
-  become: true
-  copy:
-    content: "dea0ec10143704794fc53b845b783e302a7e3f8d480ebf9d0490fa41f7d92f14"
-    dest: "{{ yoto_dir }}/secret/jwtsecret"
-    mode: "775"
 
 - name:  Start Zkyoto suites
   become: true

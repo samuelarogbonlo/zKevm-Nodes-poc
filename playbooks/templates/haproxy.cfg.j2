@@ -16,19 +16,10 @@ frontend http_front
     bind *:80
     default_backend http_back
 
-frontend ws_front
-    bind *:81
-    default_backend ws_back
-
 backend http_back
     balance roundrobin
-    server dev1 206.189.57.200:8545 check
-    server dev2 206.189.54.201:8545 check
-
-backend ws_back
-    balance roundrobin
-    server dev1 206.189.57.200:8546 check
-    server dev2 206.189.54.201:8546 check
+    server dev1 10.8.0.1:8545 check
+    server dev2 10.8.0.2:8545 check
 
 listen stats
     bind :8000

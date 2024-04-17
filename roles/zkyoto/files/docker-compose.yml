@@ -2,57 +2,7 @@ version: "3.5"
 networks:
   default:
     name: zkevm
-services:
-  geth-go:
-    container_name: geth-go
-    restart: unless-stopped
-    image: ethereum/client-go:stable
-    command:
-      - --sepolia
-      - --datadir=/var/lib/goethereum
-      - --cache=2048 
-      - --http
-      - --http.addr=0.0.0.0
-      - --http.port=8545
-      - --http.api=eth,net,web3,admin,engine
-      - --authrpc.addr=0.0.0.0
-      - --authrpc.port=8551
-      - --authrpc.vhosts=*
-      - --authrpc.jwtsecret=/config/jwtsecret
-      - --http.corsdomain=*
-      - --http.vhosts=*
-      - --ws
-      - --ws.addr=0.0.0.0
-      - --ws.port=8546
-      - --ws.origins=*
-      - --ws.api=txpool,admin,eth,net,web3,personal,engine
-    ports:
-      - "8544:8545"
-      - "30303:30303"
-      - "8551:8551"
-    volumes:
-      - ./secret/jwtsecret:/config/jwtsecret
-      - /data/geth:/var/lib/goethereum
-
-  lighthouse-beacon:
-    container_name: lighthouse-beacon
-    image: sigp/lighthouse
-    command:
-      - lighthouse 
-      -  beacon_node
-      - --network=sepolia
-      - --http
-      - --http-address=0.0.0.0
-      - --execution-endpoint=http://geth-go:8551
-      - --execution-jwt=/config/jwtsecret
-      - --checkpoint-sync-url=https://sepolia.beaconstate.info
-    ports:
-      - "9000:9000/tcp"
-      - "9000:9000/udp"
-      - "127.0.0.1:5052:5052"
-    volumes:
-      - ./secret/jwtsecret:/config/jwtsecret
-    restart: unless-stopped      
+services:     
   zkevm-rpc:
     container_name: zkevm-rpc
     restart: unless-stopped
@@ -62,10 +12,6 @@ services:
       zkevm-state-db:
         condition: service_healthy
       zkevm-sync:
-        condition: service_started
-      geth-go:
-        condition: service_started
-      lighthouse-beacon:
         condition: service_started
     image: staketechnologies/cdk-validium-node:v0.6.4-cdk.6
     deploy:
@@ -93,11 +39,7 @@ services:
     restart: unless-stopped
     depends_on:
       zkevm-state-db:
-        condition: service_healthy
-      geth-go:
-        condition: service_started
-      lighthouse-beacon:
-        condition: service_started  
+        condition: service_healthy 
     image: staketechnologies/cdk-validium-node:v0.6.4-cdk.6
     ports:
       - 9092:9091
