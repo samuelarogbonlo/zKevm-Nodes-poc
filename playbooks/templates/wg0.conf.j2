@@ -1,28 +1,28 @@
 [Interface]
-Address = 10.8.0.{{ 1 if ansible_hostname == 'dev-challenger-01' else 2 if ansible_hostname == 'dev-challenger-02' else 3 }}/24
+Address = 10.8.0.{{ 1 if ansible_hostname == 'Node-01' else 2 if ansible_hostname == 'Node-02' else 3 }}/24
 PrivateKey = {{ hostvars[inventory_hostname].wg_private_key.stdout }}
 SaveConfig = true
-{% if ansible_hostname == 'dev-challenger-03' %}
+{% if ansible_hostname == 'Node-03' %}
 PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE;
 ListenPort = 51820
 {% endif %}
 
-{% if inventory_hostname == 'dev-challenger-01' or inventory_hostname == 'dev-challenger-02' %}
+{% if inventory_hostname == 'Node-01' or inventory_hostname == 'Node-02' %}
 [Peer]
-PublicKey = {{ hostvars['dev-challenger-03'].wg_public_key.stdout }}
-Endpoint = {{ hostvars['dev-challenger-03']['ansible_host'] }}:51820
+PublicKey = {{ hostvars['Node-03'].wg_public_key.stdout }}
+Endpoint = {{ hostvars['Node-03']['ansible_host'] }}:51820
 AllowedIPs = 10.8.0.0/24
 {% endif %}
 
-{% if ansible_hostname == 'dev-challenger-03' %}
+{% if ansible_hostname == 'Node-03' %}
 [Peer]
-PublicKey = {{ hostvars['dev-challenger-01'].wg_public_key.stdout }}
+PublicKey = {{ hostvars['Node-01'].wg_public_key.stdout }}
 AllowedIPs = 10.8.0.0/32,10.8.0.100/32
 {% endif %}
 
-{% if ansible_hostname == 'dev-challenger-03' %}
+{% if ansible_hostname == 'Node-03' %}
 [Peer]
-PublicKey = {{ hostvars['dev-challenger-02'].wg_public_key.stdout }}
+PublicKey = {{ hostvars['Node-02'].wg_public_key.stdout }}
 AllowedIPs = 10.8.0.1/32
 {% endif %}
