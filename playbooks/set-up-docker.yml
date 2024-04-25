@@ -14,7 +14,7 @@
         state: present
 
     - name: Add ansible user to docker group
-      shell: "usermod -aG docker astar-admin"
+      shell: "usermod -aG docker <user-name>"
 
     - name: Reload service docker, in all cases
       ansible.builtin.service:
