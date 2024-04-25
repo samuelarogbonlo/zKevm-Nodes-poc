@@ -15,9 +15,10 @@ Also, we have decided to use an Infrastructure as a Code pattern which is Ansibl
 - Make
 
 ### Installation
-- Setup safe SSH procedures from your local machine
+- Setup your servers and add the IP addresses in the required locations. 
+- Setup safe SSH procedures from your local machine with also the Ansible user created. 
 - Run `make run-astar-network` and this will bootstrap all the steps from scratch.
-- To interact with the HTTP RPC and WebSocket endpoints, you can use either `curl` for [http-challenger.astar.network](http://http-challenger.astar.network) or a `WebSocket client` for [ws-challenger.astar.network](http://ws-challenger.astar.network), depending on the service you wish to access.
+- To interact with the HTTP RPC and WebSocket endpoints, you can use either `curl` for specified DNS names or a `WebSocket client` as well, depending on the service you wish to access.
 
 ## Author
 - Samuel Arogbonlo - [GitHub](https://github.com/samuelarogbonlo)
